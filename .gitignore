@@ -1,4 +1,7 @@
-#Python bytecode and cache
 __pycache__/
-
 .vscode/
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+.terraform.*

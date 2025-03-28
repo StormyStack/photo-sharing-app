@@ -2,7 +2,7 @@ resource "aws_lb" "my_alb" {
   name = var.alb_name
   internal = false
   load_balancer_type = "application"
-  subnets = var.public_subnet_cidr
+  subnets = [var.public_subnet_id]
   enable_deletion_protection = false
   enable_cross_zone_load_balancing = true
   tags = {

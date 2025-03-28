@@ -1,5 +1,5 @@
-variable "public_subnet_cidr" {
-  type = list(string)
+variable "public_subnet_id" {
+  type = string
 }
 
 variable "alb_name" {

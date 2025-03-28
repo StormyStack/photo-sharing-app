@@ -4,6 +4,7 @@ variable "vpc_id" {
 
 variable "env_prefix" {
   type = string
+  default = "Deployment"
 }
 
 variable "my-ip" {

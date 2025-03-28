@@ -1,10 +1,10 @@
-variable "public_subnet_id" {
-  type = string
+variable "public_subnet_ids" {
+  type = list(string)
 }
 
 variable "alb_name" {
   type = string
-  default = "my_photosharing_alb"
+  default = "my-photosharing-alb"
 }
 
 variable "vpc_id" {

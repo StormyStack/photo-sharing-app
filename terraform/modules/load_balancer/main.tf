@@ -2,7 +2,7 @@ resource "aws_lb" "my_alb" {
   name = var.alb_name
   internal = false
   load_balancer_type = "application"
-  subnets = [var.public_subnet_id]
+  subnets = var.public_subnet_ids
   enable_deletion_protection = false
   enable_cross_zone_load_balancing = true
   tags = {
@@ -11,7 +11,7 @@ resource "aws_lb" "my_alb" {
 }
 
 resource "aws_lb_target_group" "my_target_grp" {
-  name = "my_target_grp"
+  name = "mytargetgrp"
   port = 80
   protocol = "HTTP"
   vpc_id = var.vpc_id

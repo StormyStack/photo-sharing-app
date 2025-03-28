@@ -10,7 +10,7 @@ resource "aws_security_group" "alb_sg" {
     from_port = 80
     to_port = 80
     protocol = "tcp"
-    security_groups = [aws_security_group.ec2_sg.id]
+    cidr_blocks = [ "0.0.0.0/0" ]
   }
   tags = {
     Name = "App alb_sg"
@@ -23,7 +23,7 @@ resource "aws_security_group" "ec2_sg" {
     from_port = 80
     to_port = 80
     protocol = "tcp"
-    security_groups = [aws_security_group.alb_sg]
+    security_groups = [aws_security_group.alb_sg.id]
   }
   ingress {
     from_port = 22

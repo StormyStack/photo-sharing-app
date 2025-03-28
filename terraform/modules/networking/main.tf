@@ -35,7 +35,8 @@ resource "aws_internet_gateway" "app-igw" {
 
 resource "aws_default_route_table" "app_default_rt" {
   default_route_table_id = var.default_route_table_id
-  route = {
+
+  route {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.app-igw.id
   }

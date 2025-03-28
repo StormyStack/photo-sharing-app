@@ -20,7 +20,7 @@ resource "aws_instance" "photo_web_server" {
   ami = data.aws_ami.LatestUbuntu.id
   instance_type = var.instance_type
   key_name = aws_key_pair.ssh-key.key_name
-  subnet_id = var.subnet_id
+  subnet_id = var.subnet_ids[0]
   security_groups = [var.ec2_sg_id]
   iam_instance_profile = var.ec2_iam_profile_name
   user_data = file("script.sh")
@@ -58,7 +58,7 @@ resource "aws_autoscaling_group" "photoapp_asg" {
   desired_capacity = 2
   max_size = 4
   min_size = 2
-  vpc_zone_identifier = var.subnet_id
+  vpc_zone_identifier = var.subnet_ids
   
   launch_template {
     id = aws_launch_template.asg_template.id

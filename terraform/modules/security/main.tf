@@ -43,43 +43,39 @@ resource "aws_security_group" "ec2_sg" {
 }
 
 resource "aws_iam_role" "ec2_role" {
-  name = "ec2-aws_iam_role"
+  name = "ec2-aws-iam-role"
   assume_role_policy = jsonencode({
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": [
-                "sts:AssumeRole"
-            ],
-            "Principal": {
-                "Service": [
-                    "ec2.amazonaws.com"
-                ]
-            }
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = "sts:AssumeRole"
+        Principal = {
+          Service = "ec2.amazonaws.com"
         }
+      }
     ]
-})
+  })
 }
 
-resource "aws_iam_policy" "s3-dynamodb-access" {
-  name = "s3 dynamodb access policy"
+resource "aws_iam_policy" "s3_dynamodb_access" {
+  name        = "s3-dynamodb-access-policy"
   description = "EC2 can access S3 and DynamoDB."
+
   policy = jsonencode({
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": [
-                "s3:*"
-            ]
-            "Resource": [
-              var.s3_bucket_arn,
-              "${var.s3_bucket_arn}/*"
-            ]
-        }
-    ]
-},{
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:*"
+        ]
+        Resource = [
+          var.s3_bucket_arn,
+          "${var.s3_bucket_arn}/*"
+        ]
+      },
+      {
         Effect = "Allow"
         Action = [
           "dynamodb:GetItem",
@@ -88,12 +84,14 @@ resource "aws_iam_policy" "s3-dynamodb-access" {
           "dynamodb:Query"
         ]
         Resource = var.dynamodb_arn
-      } )
+      }
+    ]
+  })
 }
 
 resource "aws_iam_role_policy_attachment" "attach_policy" {
-  role = aws_iam_role.ec2_role
-  policy_arn = aws_iam_policy.s3-dynamodb-access.arn
+  role       = aws_iam_role.ec2_role.name  
+  policy_arn = aws_iam_policy.s3_dynamodb_access.arn
 }
 
 resource "aws_iam_instance_profile" "ec2_iam_profile" {

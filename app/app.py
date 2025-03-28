@@ -11,16 +11,8 @@ app.config.from_object("config.Config")
 S3_BUCKET_NAME = app.config["S3_BUCKET_NAME"]
 DYNAMODB_TABLE_NAME = app.config["DYNAMODB_TABLE_NAME"]
 
-s3 = boto3.client(
-    "s3",
-    aws_access_key_id=app.config["AWS_ACCESS_KEY"],
-    aws_secret_access_key=app.config["AWS_SECRET_KEY"]
-)
-dynamodb = boto3.resource(
-    "dynamodb",
-    aws_access_key_id=app.config["AWS_ACCESS_KEY"],
-    aws_secret_access_key=app.config["AWS_SECRET_KEY"]
-)
+s3 = boto3.client("s3")
+dynamodb = boto3.resource("dynamodb")
 table = dynamodb.Table(DYNAMODB_TABLE_NAME)
 
 @app.route("/")

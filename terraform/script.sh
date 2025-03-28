@@ -13,6 +13,7 @@ else
 fi
 
 cd $APP_DIR
+cd app
 python3 -m venv venv
 source venv/bin/activate
 pip install --upgrade pip

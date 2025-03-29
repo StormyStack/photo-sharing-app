@@ -33,4 +33,12 @@ module "webserver" {
   ec2_sg_id = module.security.ec2-ag_id
   ec2_iam_profile_name = module.security.ec2_iam_profile_name
   alb_target_group_arn = module.load_balancer.alb_target_group_arn
+  
+  depends_on = [
+    module.networking,
+    module.storage,
+    module.database,
+    module.security,
+    module.load_balancer
+  ]
 }

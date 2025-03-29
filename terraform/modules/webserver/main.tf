@@ -1,28 +1,16 @@
-data "aws_ami" "LatestUbuntu" {
-  most_recent = true
-  owners      = ["099720109477"]
-  filter {
-    name   = "name"
-    values = [var.image_name]
-  }
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-}
-
 resource "aws_key_pair" "ssh-key" {
   key_name   = "photoapp-key-pair"
   public_key = file(var.public_key_location)
 }
 
 resource "aws_instance" "photo_web_server" {
-  ami = data.aws_ami.LatestUbuntu.id
+  ami = "ami-084568db4383264d4"
   instance_type = var.instance_type
   key_name = aws_key_pair.ssh-key.key_name
   subnet_id = var.subnet_ids[0]
   security_groups = [var.ec2_sg_id]
   iam_instance_profile = var.ec2_iam_profile_name
+  associate_public_ip_address = true
   user_data = file("script.sh")
   tags = {
     Name = "Photo Sharing App Instance"

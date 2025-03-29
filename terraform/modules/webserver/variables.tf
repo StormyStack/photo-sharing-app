@@ -1,8 +1,3 @@
-variable "image_name" {
-  type = string
-  default = "ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*"
-}
-
 variable "public_key_location" {
   type = string
   default = "~/.ssh/id_rsa.pub"

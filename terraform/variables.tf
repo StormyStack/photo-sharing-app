@@ -9,3 +9,15 @@ variable "my-ip" {
 variable "bucket_name" {
   type = string
 }
+
+variable "app_bucket_name" {
+  type = string
+}
+
+variable "app_version" {
+  type = string
+}
+
+variable "app_zip_path" {
+  type = string
+}

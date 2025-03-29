@@ -7,9 +7,9 @@ resource "aws_security_group" "alb_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   egress {
-    from_port = 80
-    to_port = 80
-    protocol = "tcp"
+    from_port = 0
+    to_port = 0
+    protocol = "-1"
     cidr_blocks = [ "0.0.0.0/0" ]
   }
   tags = {
@@ -17,33 +17,31 @@ resource "aws_security_group" "alb_sg" {
   }
 }
 
-resource "aws_security_group" "ec2_sg" {
+resource "aws_security_group" "eb_sg" {
   vpc_id = var.vpc_id
+
   ingress {
-    from_port = 80
-    to_port = 80
-    protocol = "tcp"
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
     security_groups = [aws_security_group.alb_sg.id]
   }
-  ingress {
-    from_port = 22
-    to_port = 22
-    protocol = "tcp"
-    cidr_blocks = [var.my-ip]
-  }
+
   egress {
-    from_port = 443
-    to_port = 443
-    protocol = "tcp"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
   tags = {
-    Name = "App ec2_sg"
+    Name = "Elastic Beanstalk Security Group"
   }
 }
 
-resource "aws_iam_role" "ec2_role" {
-  name = "ec2-aws-iam-role"
+resource "aws_iam_role" "beanstalk_role" {
+  name = "beanstalk-ec2-role"
+  
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -51,16 +49,16 @@ resource "aws_iam_role" "ec2_role" {
         Effect = "Allow"
         Action = "sts:AssumeRole"
         Principal = {
-          Service = "ec2.amazonaws.com"
+          Service = ["ec2.amazonaws.com", "elasticbeanstalk.amazonaws.com"]
         }
       }
     ]
   })
 }
 
-resource "aws_iam_policy" "s3_dynamodb_access" {
-  name        = "s3-dynamodb-access-policy"
-  description = "EC2 can access S3 and DynamoDB."
+resource "aws_iam_policy" "beanstalk_s3_dynamodb_access" {
+  name        = "beanstalk-s3-dynamodb-policy"
+  description = "Allow Beanstalk to access S3 and DynamoDB"
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -89,12 +87,12 @@ resource "aws_iam_policy" "s3_dynamodb_access" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "attach_policy" {
-  role       = aws_iam_role.ec2_role.name  
-  policy_arn = aws_iam_policy.s3_dynamodb_access.arn
+resource "aws_iam_role_policy_attachment" "attach_beanstalk_policy" {
+  role       = aws_iam_role.beanstalk_role.name  
+  policy_arn = aws_iam_policy.beanstalk_s3_dynamodb_access.arn
 }
 
-resource "aws_iam_instance_profile" "ec2_iam_profile" {
-  name = "ec2_access_profile"
-  role = aws_iam_role.ec2_role.name
+resource "aws_iam_instance_profile" "beanstalk_iam_profile" {
+  name = "beanstalk-instance-profile"
+  role = aws_iam_role.beanstalk_role.name
 }

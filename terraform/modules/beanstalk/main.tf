@@ -8,7 +8,7 @@ resource "aws_elastic_beanstalk_application_version" "photo_app_version" {
   application = aws_elastic_beanstalk_application.photo_app.name
   bucket      = var.app_bucket_name
   key         = var.s3_object_key
-  description = "Version 1.0 of the photo-sharing app"
+  description = var.photo_app_version_description
 }
 
 resource "aws_elastic_beanstalk_environment" "photo_app_env" {
@@ -18,16 +18,28 @@ resource "aws_elastic_beanstalk_environment" "photo_app_env" {
   version_label       = aws_elastic_beanstalk_application_version.photo_app_version.name
 
   setting {
+    namespace = "aws:ec2:vpc"
+    name      = "VPCId"
+    value     = var.vpc_id
+  }
+
+    setting {
+    namespace = "aws:ec2:vpc"
+    name      = "ELBSubnets"
+    value     = join(",", var.public_subnet_ids)
+  }
+
+    setting {
+    namespace = "aws:ec2:vpc"
+    name      = "Subnets"
+    value     = join(",", var.public_subnet_ids)
+  }  
+
+  setting {
     namespace = "aws:elasticbeanstalk:environment"
     name      = "LoadBalancerType"
     value     = "application"
   }
-
-  /*setting {
-    namespace = "aws:elbv2:loadbalancer"
-    name      = "LoadBalancerName"
-    value     = var.my_alb_name
-  }*/
 
   setting {
     namespace = "aws:autoscaling:launchconfiguration"
@@ -57,12 +69,6 @@ resource "aws_elastic_beanstalk_environment" "photo_app_env" {
     namespace = "aws:autoscaling:asg"
     name      = "MaxSize"
     value     = "4"
-  }
-
-  setting {
-    namespace = "aws:ec2:vpc"
-    name      = "Subnets"
-    value     = join(",", var.subnet_ids)
   }
 
   setting {

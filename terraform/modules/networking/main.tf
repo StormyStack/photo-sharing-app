@@ -1,7 +1,9 @@
 resource "aws_vpc" "main-vpc" {
   cidr_block = var.vpc_cidr_block
+  enable_dns_support   = true
+  enable_dns_hostnames = true
   tags = {
-    Name = "${var.env_prefix}-vpc"
+    Name = "app-vpc"
   }
 }
 
@@ -29,7 +31,7 @@ resource "aws_subnet" "private_subnet" {
 resource "aws_internet_gateway" "app-igw" {
   vpc_id = aws_vpc.main-vpc.id
   tags = {
-    Name = "${var.env_prefix}-igw"
+    Name = "my-igw"
   }
 }
 
@@ -41,6 +43,6 @@ resource "aws_default_route_table" "app_default_rt" {
     gateway_id = aws_internet_gateway.app-igw.id
   }
   tags = {
-    Name = "${var.env_prefix}-rt"
+    Name = "app-rt"
   }
 }

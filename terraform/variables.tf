@@ -1,11 +1,3 @@
-variable "availability_zones" {
-  type = list(string)
-}
-
-variable "my-ip" {
-  type = string
-}
-
 variable "bucket_name" {
   type = string
 }
@@ -19,5 +11,9 @@ variable "app_version" {
 }
 
 variable "app_zip_path" {
+  type = string
+}
+
+variable "photo_app_version_description" {
   type = string
 }

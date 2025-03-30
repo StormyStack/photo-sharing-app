@@ -1,4 +1,12 @@
-variable "subnet_ids" {
+variable "vpc_id" {
+  type = string
+}
+
+variable "public_subnet_ids" {
+  type = list(string)
+}
+
+variable "private_subnet_ids" {
   type = list(string)
 }
 
@@ -7,10 +15,6 @@ variable "eb_sg_id" {
 }
 
 variable "beanstalk_iam_profile_name" {
-  type = string
-}
-
-variable "my_alb_arn" {
   type = string
 }
 
@@ -35,6 +39,6 @@ variable "app_bucket_name" {
   description = "Where the app stores"
 }
 
-variable "my_alb_name" {
+variable "photo_app_version_description" {
   type = string
 }

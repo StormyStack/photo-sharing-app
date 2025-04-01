@@ -6,21 +6,21 @@ import uuid
 from datetime import datetime
 from config import Config
 
-app = Flask(__name__)
-app.config.from_object(Config)
+application = Flask(__name__)
+application.config.from_object(Config)
 
-S3_BUCKET_NAME = app.config["S3_BUCKET_NAME"]
-DYNAMODB_TABLE_NAME = app.config["DYNAMODB_TABLE_NAME"]
+S3_BUCKET_NAME = application.config["S3_BUCKET_NAME"]
+DYNAMODB_TABLE_NAME = application.config["DYNAMODB_TABLE_NAME"]
 
 s3 = boto3.client("s3")
 dynamodb = boto3.resource("dynamodb")
 table = dynamodb.Table(DYNAMODB_TABLE_NAME)
 
-@app.route("/")
+@application.route("/")
 def index():
     return render_template("index.html")
 
-@app.route("/upload", methods=["POST"])
+@application.route("/upload", methods=["POST"])
 def upload_file():
     file = request.files["file"]
     if file:
@@ -42,7 +42,7 @@ def upload_file():
         return "File uploaded successfully!", 200
     return "No file uploaded!", 400
 
-@app.route("/images")
+@application.route("/images")
 def list_images():
     response = table.scan()
     items = response.get("Items", [])
@@ -50,9 +50,9 @@ def list_images():
     image_urls = [{"photo_url": item["photo_url"], "uploaded_at": item["uploaded_at"]} for item in items]
     return jsonify(image_urls)
 
-@app.route("/health")
+@application.route("/health")
 def health_check():
     return "OK", 200
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    application.run(port=5000,debug=True)

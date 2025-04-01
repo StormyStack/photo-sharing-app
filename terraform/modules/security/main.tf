@@ -36,40 +36,25 @@ resource "aws_iam_role" "beanstalk_role" {
   })
 }
 
-resource "aws_iam_policy" "beanstalk_s3_dynamodb_access" {
-  name        = "beanstalk-s3-dynamodb-policy"
-  description = "Allow Beanstalk to access S3 and DynamoDB"
+resource "aws_iam_policy" "beanstalk_full_access" {
+  name        = "beanstalk-full-access-policy"
+  description = "Allow Beanstalk EC2 to access all AWS services"
 
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
-        Effect = "Allow"
-        Action = [
-          "s3:*"
-        ]
-        Resource = [
-          var.s3_bucket_arn,
-          "${var.s3_bucket_arn}/*"
-        ]
-      },
-      {
-        Effect = "Allow"
-        Action = [
-          "dynamodb:GetItem",
-          "dynamodb:PutItem",
-          "dynamodb:Scan",
-          "dynamodb:Query"
-        ]
-        Resource = var.dynamodb_arn
+        Effect   = "Allow"
+        Action   = "*"
+        Resource = "*"
       }
     ]
   })
 }
 
-resource "aws_iam_role_policy_attachment" "attach_beanstalk_policy" {
-  role       = aws_iam_role.beanstalk_role.name  
-  policy_arn = aws_iam_policy.beanstalk_s3_dynamodb_access.arn
+resource "aws_iam_role_policy_attachment" "attach_beanstalk_full_access" {
+  role       = aws_iam_role.beanstalk_role.name
+  policy_arn = aws_iam_policy.beanstalk_full_access.arn
 }
 
 resource "aws_iam_instance_profile" "beanstalk_iam_profile" {

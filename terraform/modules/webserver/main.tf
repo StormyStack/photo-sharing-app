@@ -4,7 +4,7 @@ resource "aws_key_pair" "ssh-key" {
 }
 
 resource "aws_instance" "photo_web_server" {
-  ami = "ami-084568db4383264d4"
+  ami = var.ami_id
   instance_type = var.instance_type
   key_name = aws_key_pair.ssh-key.key_name
   subnet_id = var.subnet_ids[0]

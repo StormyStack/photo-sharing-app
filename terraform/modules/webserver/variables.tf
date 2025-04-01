@@ -21,5 +21,9 @@ variable "ec2_iam_profile_name" {
 }
 
 variable "alb_target_group_arn" {
-  
+
+}
+
+variable "ami_id" {
+  type = string
 }

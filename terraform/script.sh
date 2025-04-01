@@ -1,21 +1,16 @@
 #!/bin/bash
 
-sudo apt update -y && sudo apt upgrade -y
+sudo yum install python python3-pip git nginx
 
-sudo apt install -y python3-pip python3-venv git nginx
+cd ~
 
-APP_DIR="/home/ubuntu/photo_share_app"
-mkdir -p $APP_DIR
-cd $APP_DIR
+git clone https://github.com/StormyStack/photo-sharing-app.git
 
-git clone https://github.com/StormyStack/photo-sharing-app.git .
-
-python3 -m venv venv
-source venv/bin/activate
-pip install --upgrade pip
+cd photo-sharing-app
+cd app
 pip install -r requirements.txt
 
-sudo tee /etc/nginx/sites-available/photoapp > /dev/null << 'EOL'
+sudo tee /etc/nginx/conf.d/photoapp.conf > /dev/null << 'EOL'
 server {
     listen 80;
     server_name _;
@@ -30,8 +25,8 @@ server {
 }
 EOL
 
-sudo ln -sf /etc/nginx/sites-available/photoapp /etc/nginx/sites-enabled/
-sudo rm -f /etc/nginx/sites-enabled/default
+sudo rm -f /etc/nginx/default.d/default.conf
+sudo nginx -t && sudo systemctl restart nginx
 
 sudo tee /etc/systemd/system/photoapp.service > /dev/null << 'EOL'
 [Unit]
@@ -39,11 +34,11 @@ Description=Flask App with Gunicorn
 After=network.target
 
 [Service]
-User=ubuntu
-Group=www-data
-WorkingDirectory=/home/ubuntu/photo_share_app/app
-Environment="PATH=/home/ubuntu/photo_share_app/app/venv/bin"
-ExecStart=/home/ubuntu/photo_share_app/app/venv/bin/gunicorn -w 3 -b 127.0.0.1:8000 app:app
+User=ec2-user
+Group=nginx
+WorkingDirectory=/home/ec2-user/photo-sharing-app/app
+Environment="PATH=/home/ec2-user/.local/bin"
+ExecStart=/home/ec2-user/.local/bin/gunicorn -w 4 -b 0.0.0.0:8000 app:application
 Restart=always
 
 [Install]

@@ -11,14 +11,13 @@ module "storage" {
 
 module "database" {
   source = "./modules/database"
+  dynamodb_table_name = var.dynamodb_table_name
 }
 
 module "security" {
   source = "./modules/security"
   vpc_id = module.networking.main_vpc_id
   my-ip = var.my-ip
-  s3_bucket_arn = module.storage.s3_bucket_arn
-  dynamodb_arn = module.database.dynamodb_arn
 }
 
 module "load_balancer" {
@@ -33,12 +32,7 @@ module "webserver" {
   ec2_sg_id = module.security.ec2-ag_id
   ec2_iam_profile_name = module.security.ec2_iam_profile_name
   alb_target_group_arn = module.load_balancer.alb_target_group_arn
+  ami_id = var.ami_id
   
-  depends_on = [
-    module.networking,
-    module.storage,
-    module.database,
-    module.security,
-    module.load_balancer
-  ]
+  depends_on = [module.load_balancer]
 }

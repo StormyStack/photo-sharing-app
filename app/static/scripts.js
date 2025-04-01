@@ -6,11 +6,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const fileList = uploadForm.querySelector(".file-list");
     const errorMessage = document.getElementById("errorMessage");
 
-    // Update file list when files are selected
     fileInput.addEventListener("change", function () {
         const files = this.files;
         fileList.innerHTML = "";
-        errorMessage.classList.remove("visible"); // Hide error when files change
+        errorMessage.classList.remove("visible");
 
         if (files && files.length > 0) {
             Array.from(files).forEach(file => {
@@ -25,26 +24,22 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // Handle multiple file upload
     uploadForm.addEventListener("submit", async (event) => {
-        event.preventDefault(); // Prevent form submission
-
+        event.preventDefault();
         const files = fileInput.files;
 
-        // Debug logs to confirm file state
         console.log("Files object:", files);
         console.log("Number of files:", files ? files.length : "No files");
 
-        // Validation: Check if files are selected
         if (!files || files.length === 0) {
-            errorMessage.classList.add("visible"); // Show error message
-            setTimeout(() => errorMessage.classList.remove("visible"), 3000); // Hide after 3 seconds
+            errorMessage.classList.add("visible");
+            setTimeout(() => errorMessage.classList.remove("visible"), 3000);
             return;
         }
 
         const formData = new FormData();
         for (const file of files) {
-            formData.append("files", file);
+            formData.append("file", file);
         }
 
         try {
@@ -56,12 +51,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 body: formData,
             });
 
-            if (!response.ok) {
-                throw new Error(`Upload failed with status: ${response.status}`);
+            const result = await response.json();
+            if (response.ok) {
+                alert(result.message || `${files.length} file${files.length > 1 ? 's' : ''} uploaded successfully!`);
+            } else {
+                throw new Error(result.error || "Unknown upload error");
             }
 
-            const result = await response.json();
-            alert(result.message || `${files.length} file${files.length > 1 ? 's' : ''} uploaded successfully!`);
             uploadForm.reset();
             fileList.innerHTML = "";
             uploadButton.textContent = "Upload";
@@ -74,14 +70,13 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // Load images from server
     async function loadImages() {
         try {
+            gallery.innerHTML = "<p>Loading...</p>";
             const response = await fetch("/images");
             if (!response.ok) {
                 throw new Error("Failed to fetch images");
             }
-
             const images = await response.json();
             gallery.innerHTML = "";
 
@@ -90,15 +85,15 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            images.forEach((imageUrl) => {
+            images.forEach((image) => {
                 const img = document.createElement("img");
-                img.src = imageUrl;
+                img.src = image.photo_url;
                 img.classList.add("gallery-image");
                 img.alt = "Gallery image";
                 img.loading = "lazy";
                 img.onerror = () => {
-                    img.src = "path/to/fallback-image.jpg";
-                    console.error(`Failed to load image: ${imageUrl}`);
+                    img.src = "/static/fallback-image.jpg";
+                    console.error(`Failed to load image: ${image.photo_url}`);
                 };
                 gallery.appendChild(img);
             });
@@ -108,6 +103,5 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Initial load
     loadImages();
 });

@@ -1,14 +1,6 @@
 #!/bin/bash
 
-sudo yum install python python3-pip git nginx
-
-cd ~
-
-git clone https://github.com/StormyStack/photo-sharing-app.git
-
-cd photo-sharing-app
-cd app
-pip install -r requirements.txt
+sudo yum install python python3-pip git nginx -y
 
 sudo tee /etc/nginx/conf.d/photoapp.conf > /dev/null << 'EOL'
 server {
@@ -28,6 +20,15 @@ EOL
 sudo rm -f /etc/nginx/default.d/default.conf
 sudo nginx -t && sudo systemctl restart nginx
 
+cd /home/ec2-user
+
+git clone https://github.com/StormyStack/photo-sharing-app.git
+
+cd photo-sharing-app/app
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+
 sudo tee /etc/systemd/system/photoapp.service > /dev/null << 'EOL'
 [Unit]
 Description=Flask App with Gunicorn
@@ -37,8 +38,8 @@ After=network.target
 User=ec2-user
 Group=nginx
 WorkingDirectory=/home/ec2-user/photo-sharing-app/app
-Environment="PATH=/home/ec2-user/.local/bin"
-ExecStart=/home/ec2-user/.local/bin/gunicorn -w 4 -b 0.0.0.0:8000 app:application
+Environment="PATH=/home/ec2-user/photo-sharing-app/app/venv/bin"
+ExecStart=/home/ec2-user/photo-sharing-app/app/venv/bin/gunicorn -w 4 -b 0.0.0.0:8000 app:application
 Restart=always
 
 [Install]

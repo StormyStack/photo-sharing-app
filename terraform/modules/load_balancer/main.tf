@@ -3,6 +3,7 @@ resource "aws_lb" "my_alb" {
   internal = false
   load_balancer_type = "application"
   subnets = var.public_subnet_ids
+  security_groups = [var.alb-sg_id]
   enable_deletion_protection = false
   enable_cross_zone_load_balancing = true
   tags = {

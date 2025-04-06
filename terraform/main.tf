@@ -24,6 +24,7 @@ module "load_balancer" {
   source = "./modules/load_balancer"
   public_subnet_ids = module.networking.public_subnet_ids
   vpc_id = module.networking.main_vpc_id
+  alb-sg_id = module.security.alb-sg_id
 }
 
 module "webserver" {
@@ -34,5 +35,7 @@ module "webserver" {
   alb_target_group_arn = module.load_balancer.alb_target_group_arn
   ami_id = var.ami_id
   
-  depends_on = [module.load_balancer]
+  depends_on = [module.load_balancer,
+  module.storage
+  ]
 }

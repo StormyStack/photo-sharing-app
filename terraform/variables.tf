@@ -15,6 +15,6 @@ variable "ami_id" {
   default = "ami-071226ecf16aa7d96"
 }
 
-variable "dynamodb_table_name" {
+variable "region" {
   type = string
 }

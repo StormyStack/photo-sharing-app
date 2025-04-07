@@ -11,7 +11,6 @@ module "storage" {
 
 module "database" {
   source = "./modules/database"
-  dynamodb_table_name = var.dynamodb_table_name
 }
 
 module "security" {
